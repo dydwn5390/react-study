@@ -6,7 +6,7 @@ import Counter from './Counter';
 import Say from './Say';
 
 function App() {
-  return <Say />;
+  return <MyComponent name={"3"} favoriteNumber={"35"}>리액트</MyComponent>;
 }
 
 export default App;
