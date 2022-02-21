@@ -1,4 +1,5 @@
 import { createAction, handleActions } from 'redux-actions';
+import produce from 'immer';
 
 // 액션 타입 정의
 const CHANGE_INPUT = 'todos/CHANGE_INPUT'; // 인풋 값을 변경함
@@ -90,31 +91,55 @@ const initialState = {
 //             return state;
 //     }
 // }
+// const todos = handleActions(
+//     {
+//         [CHANGE_INPUT]: (state, { payload: input }) => ({
+//             ...state,
+//             input: input,
+//         }),
+//         [INSERT]: (state, {payload: todo}) => ({
+//             ...state,
+//             todos: state.todos.concat(todo),
+//         }),
+//         [TOGGLE]: (state, action) => ({
+//             ...state,
+//             todos: state.todos.map((todo) =>
+//                 todo.id === action.payload
+//                     ? {
+//                           ...todo,
+//                           done: !todo.done,
+//                       }
+//                     : todo,
+//             ),
+//         }),
+//         [REMOVE]: (state, action) => ({
+//             ...state,
+//             todos: state.todos.filter((todo) => todo.id !== action.payload),
+//         }),
+//     },
+//     initialState,
+// );
+
 const todos = handleActions(
     {
-        [CHANGE_INPUT]: (state, { payload: input }) => ({
-            ...state,
-            input: input,
-        }),
-        [INSERT]: (state, {payload: todo}) => ({
-            ...state,
-            todos: state.todos.concat(todo),
-        }),
-        [TOGGLE]: (state, action) => ({
-            ...state,
-            todos: state.todos.map((todo) =>
-                todo.id === action.payload
-                    ? {
-                          ...todo,
-                          done: !todo.done,
-                      }
-                    : todo,
-            ),
-        }),
-        [REMOVE]: (state, action) => ({
-            ...state,
-            todos: state.todos.filter((todo) => todo.id !== action.payload),
-        }),
+        [CHANGE_INPUT]: (state, { payload: input }) =>
+            produce(state, (draft) => {
+                draft.input = input;
+            }),
+        [INSERT]: (state, { payload: todo }) =>
+            produce(state, (draft) => {
+                draft.todos.push(todo);
+            }),
+        [TOGGLE]: (state, { payload: id }) =>
+            produce(state, (draft) => {
+                const todo = draft.todos.find((todo) => todo.id === id);
+                todo.done = !todo.done;
+            }),
+        [REMOVE]: (state, { payload: id }) =>
+            produce(state, (draft) => {
+                const index = draft.todos.findIndex((todo) => todo.id === id);
+                draft.todos.splice(index, 1);
+            }),
     },
     initialState,
 );

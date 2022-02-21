@@ -1,12 +1,22 @@
-import { connect } from 'react-redux';
+import { connect, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import Counter from '../components/Counter';
 import { decrease, increase } from '../modules/counter';
 import { bindActionCreators } from 'redux';
+import { useCallback } from 'react';
 
 // 아래 increase, decrease 는 counter.js 에서 생성한 액션 함수
-const CounterContainer = ({ number, increase, decrease }) => {
+const CounterContainer = () => {
+    const number = useSelector((state) => state.counter.number);
+    const dispatch = useDispatch();
+    const onIncrease = useCallback(() => dispatch(increase()),[dispatch]);
+    const onDecrease = useCallback(() => dispatch(decrease()),[dispatch]);
     return (
-        <Counter number={number} onIncrease={increase} onDecrease={decrease} />
+        <Counter
+            number={number}
+            onIncrease={onIncrease}
+            onDecrease={onDecrease}
+        />
     );
 };
 
@@ -20,6 +30,7 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = {
     increase,
     decrease,
-}
+};
 
-export default connect(mapStateToProps, mapDispatchToProps)(CounterContainer);
+// export default connect(mapStateToProps, mapDispatchToProps)(CounterContainer);
+export default CounterContainer;
